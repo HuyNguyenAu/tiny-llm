@@ -214,6 +214,7 @@ public class BPETokeniserTests()
                 MergeTokensCount = 9,
                 MintedTokensCount = 1,
                 CompressionRatio = 1.222,
+                TimeElapsedSeconds = 0.001,
             },
             new()
             {
@@ -224,6 +225,7 @@ public class BPETokeniserTests()
                 MergeTokensCount = 7,
                 MintedTokensCount = 2,
                 CompressionRatio = 1.571,
+                TimeElapsedSeconds = 0.002,
             },
             new()
             {
@@ -234,11 +236,12 @@ public class BPETokeniserTests()
                 MergeTokensCount = 5,
                 MintedTokensCount = 3,
                 CompressionRatio = 2.200,
+                TimeElapsedSeconds = 0.003,
             },
         };
 
         // Act.
-        var trainingSteps = BPETokeniser.Train(tokens, 5);
+        var trainingSteps = BPETokeniser.Train(tokens, 5).ToArray();
 
         // Assert.
         Assert.Equal(3, trainingSteps.Length);

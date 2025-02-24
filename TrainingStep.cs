@@ -7,4 +7,5 @@ public class TrainingStep()
     public required int MergeTokensCount { get; init; }
     public required int MintedTokensCount { get; init; }
     public required double CompressionRatio { get; init; }
+    public required double TimeElapsedSeconds { get; init; }
 }

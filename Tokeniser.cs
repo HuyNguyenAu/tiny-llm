@@ -8,7 +8,7 @@ public static class BPETokeniser
         for (int i = 0; i < tokens.Length - 1; i++)
         {
             var pair = new Tuple<int, int>(tokens[i], tokens[i + 1]);
-            
+
             if (pair_frequencies.TryGetValue(pair, out _))
             {
                 pair_frequencies[pair]++;
@@ -60,7 +60,7 @@ public static class BPETokeniser
     {
         return pairFrequencies.All(pair => pair.Value == 1);
     }
-    
+
     public static bool ShouldRecursivelyEncode(List<KeyValuePair<Tuple<int, int>, int>> pairFrequencies, Dictionary<int, Tuple<int, int>> mintedTokens)
     {
         return !pairFrequencies.Any(pair => !IsPairInMintedTokens(pair.Key, mintedTokens) && pair.Value > 1);
@@ -93,11 +93,11 @@ public static class BPETokeniser
         return null;
     }
 
-    public static TrainingStep[] Train(int[] tokens, int vocabSize)
+    public static IEnumerable<TrainingStep> Train(int[] tokens, int vocabSize)
     {
-        var trainingSteps = new List<TrainingStep>();
         var mintedTokens = new Dictionary<int, Tuple<int, int>>();
         var mergedTokens = tokens;
+        var timeElapsedStart = DateTime.UtcNow;
 
         for (var i = 0; i < vocabSize; i++)
         {
@@ -109,7 +109,7 @@ public static class BPETokeniser
             }
 
             var mintedToken = i + 256;
-            mintedTokens[mintedToken] = mostFrequentPair; 
+            mintedTokens[mintedToken] = mostFrequentPair;
             mergedTokens = Merge(mergedTokens, mostFrequentPair, mintedToken);
 
             var trainingStep = new TrainingStep
@@ -120,11 +120,11 @@ public static class BPETokeniser
                 TokensCount = tokens.Length,
                 MergeTokensCount = mergedTokens.Length,
                 MintedTokensCount = mintedTokens.Count,
-                CompressionRatio = Math.Round((double) tokens.Length / mergedTokens.Length, 3)
+                CompressionRatio = Math.Round((double)tokens.Length / mergedTokens.Length, 3),
+                TimeElapsedSeconds = (DateTime.UtcNow - timeElapsedStart).TotalSeconds
             };
-            trainingSteps.Add(trainingStep);
-        }
 
-        return [.. trainingSteps];
+            yield return trainingStep;
+        }
     }
 }

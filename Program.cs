@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-using var reader = new StreamReader("test_data_small.txt");
+using var reader = new StreamReader("test_data_large.txt");
 var text = reader.ReadToEnd();
 var token = Encoding.UTF8.GetBytes(text).Select(Convert.ToInt32).ToArray();
 
@@ -15,5 +15,6 @@ foreach (var step in trainingSteps)
     Console.WriteLine($"MergeTokensCount: {step.MergeTokensCount}");
     Console.WriteLine($"MintedTokensCount: {step.MintedTokensCount}");
     Console.WriteLine($"CompressionRatio: {step.CompressionRatio}");
+    Console.WriteLine($"Time Elapsed Seconds: {step.TimeElapsedSeconds}");
     Console.WriteLine();
 }
