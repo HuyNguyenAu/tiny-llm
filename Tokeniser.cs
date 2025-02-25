@@ -51,7 +51,7 @@ public static class BPETokeniser
         return [.. mergedTokens];
     }
 
-    public static Tuple<int, int>? GetMostFrequentPair(int[] tokens, Dictionary<int, Tuple<int, int>> mintedTokens)
+    public static Tuple<int, int>? GetMostFrequentPair(int[] tokens)
     {
         var pairFrequencies = GetPairFrequencies(tokens);
 
@@ -61,10 +61,10 @@ public static class BPETokeniser
         }
 
         var nonMintedTokenPair = pairFrequencies
-            .Where(pair => pair.Value > 1)
+            .Where(pair => pair.Key.Item1 < 256 && pair.Key.Item2 < 256 && pair.Value > 1)
             .OrderByDescending(pair => pair.Value)
             .Select(pair => pair.Key)
-            .FirstOrDefault(pair => pair.Item1 < 256 && pair.Item2 < 256);
+            .FirstOrDefault();
 
         if (nonMintedTokenPair != null)
         {
@@ -72,10 +72,10 @@ public static class BPETokeniser
         }
 
         var mintedTokenPair = pairFrequencies
-            .Where(pair => pair.Value > 1)
+            .Where(pair => (pair.Key.Item1 >= 256 || pair.Key.Item2 >= 256) && pair.Value > 1)
             .OrderByDescending(pair => pair.Value)
             .Select(pair => pair.Key)
-            .FirstOrDefault(pair => pair.Item1 >= 256 || pair.Item2 >= 256);
+            .FirstOrDefault();
 
         return mintedTokenPair;
     }
@@ -88,7 +88,7 @@ public static class BPETokeniser
 
         for (var i = 0; i < vocabSize; i++)
         {
-            var mostFrequentPair = GetMostFrequentPair(mergedTokens, mintedTokens);
+            var mostFrequentPair = GetMostFrequentPair(mergedTokens);
 
             if (mostFrequentPair == null)
             {

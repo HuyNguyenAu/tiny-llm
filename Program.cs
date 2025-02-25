@@ -1,10 +1,10 @@
 ﻿using System.Text;
 
-using var reader = new StreamReader("/Users/huy/Development/tiny-llm/test_data_large.txt");
+using var reader = new StreamReader("taylorswift.txt");
 var text = reader.ReadToEnd();
 var token = Encoding.UTF8.GetBytes(text).Select(Convert.ToInt32).ToArray();
 
-var trainingSteps = BPETokeniser.Train(token, 276);
+var trainingSteps = BPETokeniser.Train(token, 1000);
 
 foreach (var step in trainingSteps)
 {
