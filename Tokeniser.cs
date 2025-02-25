@@ -19,7 +19,7 @@ public static class BPETokeniser
             }
         }
 
-        return [.. pair_frequencies.OrderByDescending(pair => pair.Value)];
+        return [.. pair_frequencies];
     }
 
     public static int[] Merge(int[] tokens, Tuple<int, int> pair, int mintedToken)
@@ -51,46 +51,33 @@ public static class BPETokeniser
         return [.. mergedTokens];
     }
 
-    public static bool IsPairInMintedTokens(Tuple<int, int> pair, Dictionary<int, Tuple<int, int>> mintedTokens)
-    {
-        return mintedTokens.TryGetValue(pair.Item1, out _) || mintedTokens.TryGetValue(pair.Item2, out _);
-    }
-
-    public static bool IsAllPairFrequenciesOne(List<KeyValuePair<Tuple<int, int>, int>> pairFrequencies)
-    {
-        return pairFrequencies.All(pair => pair.Value == 1);
-    }
-
-    public static bool ShouldRecursivelyEncode(List<KeyValuePair<Tuple<int, int>, int>> pairFrequencies, Dictionary<int, Tuple<int, int>> mintedTokens)
-    {
-        return !pairFrequencies.Any(pair => !IsPairInMintedTokens(pair.Key, mintedTokens) && pair.Value > 1);
-    }
-
     public static Tuple<int, int>? GetMostFrequentPair(int[] tokens, Dictionary<int, Tuple<int, int>> mintedTokens)
     {
         var pairFrequencies = GetPairFrequencies(tokens);
 
-        if (IsAllPairFrequenciesOne(pairFrequencies))
+        if (pairFrequencies.All(pair => pair.Value == 1))
         {
             return null;
         }
 
-        if (ShouldRecursivelyEncode(pairFrequencies, mintedTokens))
+        var nonMintedTokenPair = pairFrequencies
+            .Where(pair => pair.Value > 1)
+            .OrderByDescending(pair => pair.Value)
+            .Select(pair => pair.Key)
+            .FirstOrDefault(pair => pair.Item1 < 256 && pair.Item2 < 256);
+
+        if (nonMintedTokenPair != null)
         {
-            return pairFrequencies.First().Key;
+            return nonMintedTokenPair;
         }
 
-        for (int i = 0; i < pairFrequencies.Count; i++)
-        {
-            var pair = pairFrequencies[i].Key;
+        var mintedTokenPair = pairFrequencies
+            .Where(pair => pair.Value > 1)
+            .OrderByDescending(pair => pair.Value)
+            .Select(pair => pair.Key)
+            .FirstOrDefault(pair => pair.Item1 >= 256 || pair.Item2 >= 256);
 
-            if (!IsPairInMintedTokens(pair, mintedTokens))
-            {
-                return pair;
-            }
-        }
-
-        return null;
+        return mintedTokenPair;
     }
 
     public static IEnumerable<TrainingStep> Train(int[] tokens, int vocabSize)
