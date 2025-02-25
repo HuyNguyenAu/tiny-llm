@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-using var reader = new StreamReader("test_data_large.txt");
+using var reader = new StreamReader("/Users/huy/Development/tiny-llm/test_data_large.txt");
 var text = reader.ReadToEnd();
 var token = Encoding.UTF8.GetBytes(text).Select(Convert.ToInt32).ToArray();
 
