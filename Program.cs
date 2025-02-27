@@ -1,10 +1,10 @@
 ﻿using System.Text;
 
-using var reader = new StreamReader("/Users/huy/Development/tiny-llm/data/test_data_small.txt");
+using var reader = new StreamReader("/Users/huy/Development/tiny-llm/data/taylorswift.txt");
 var text = reader.ReadToEnd();
 var token = Encoding.UTF8.GetBytes(text).Select(Convert.ToInt32).ToArray();
 
-TokeniserLeap.Train(token, 1000);
+TokeniserLeap.Train(token, 10000);
 
 // foreach (var step in trainingSteps)
 // {

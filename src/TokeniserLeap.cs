@@ -41,11 +41,8 @@ public static class TokeniserLeap
         //       });
         // #endregion
 
-        Console.WriteLine($"Pre Time taken: {DateTime.UtcNow - now}");
-
-        now = DateTime.UtcNow;
         tracker.Commit();
-        Console.WriteLine($"Commit Time taken: {DateTime.UtcNow - now}");
+        Console.WriteLine($"Pre Time taken: {DateTime.UtcNow - now}");
 
         now = DateTime.UtcNow;
         for (int i = 0; i < vocabSize; i++)
