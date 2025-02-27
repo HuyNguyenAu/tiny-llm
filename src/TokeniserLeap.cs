@@ -4,7 +4,7 @@ public static class TokeniserLeap
     public static void Train(int[] tokens, int vocabSize)
     {
         var pairs = new List<Pair>();
-        var merges = new List<Tuple<int, int, int>>();
+        var merges = new Dictionary<int, Tuple<int, int>>();
         var tracker = new Tracker();
 
         var now = DateTime.UtcNow;
@@ -45,9 +45,14 @@ public static class TokeniserLeap
         Console.WriteLine($"Pre Time taken: {DateTime.UtcNow - now}");
 
         now = DateTime.UtcNow;
-        for (int i = 0; i < vocabSize; i++)
+        while (merges.Count < vocabSize)
         {
             var mostFrequentPair = tracker.MostFrequentPair();
+
+            if (mostFrequentPair == null)
+            {
+                break;
+            }
 
             if (mostFrequentPair != null)
             {
@@ -55,16 +60,13 @@ public static class TokeniserLeap
                 var mergeValue = merges.Count + 256;
                 var mostFrequentPairIndexes = tracker.PairIndexes[mostFrequentPair];
 
+                merges[mergeValue] = mostFrequentPair;
+
                 // #region Debug
                 // Console.WriteLine($"{mostFrequentPair} -> {mergeValue}");
                 // Console.WriteLine($"Most frequent pair indexes: {string.Join(", ", mostFrequentPairIndexes)}");
                 // Console.WriteLine();
                 // #endregion  
-
-                if (mostFrequentPairIndexes == null)
-                {
-                    break;
-                }
 
                 foreach (var pairIndex in mostFrequentPairIndexes)
                 {
@@ -91,8 +93,6 @@ public static class TokeniserLeap
 
                             tracker.RemovePair(nextPair.Value, nextPair.ValueNext, nextPair.Index);
                             tracker.AddPair(mergeValue, nextPair.ValueNext, nextPair.Index);
-
-                            merges.Add(new Tuple<int, int, int>(mergeValue, nextPair.ValueNext, mergeValue));
 
                             // Update the next pair.
                             pairs[nextPair.Index].Value = mergeValue;
@@ -149,12 +149,6 @@ public static class TokeniserLeap
         }
         Console.WriteLine($"Time taken: {DateTime.UtcNow - now}");
 
-        // Console.WriteLine();
-        // pairs.ForEach(pair => {
-        //     Console.WriteLine($"Value: {pair.Value}, ValueNext: {pair.ValueNext}, State: {pair.State}, Index: {pair.Index}, PreviousIndex: {pair.PreviousIndex}, NextIndex: {pair.NextIndex}, ModifiedPairValue: {pair.MutationModified?.ModifiedPairValue}, ModifiedPairValueNext: {pair.MutationModified?.ModifiedPairValueNext}, ModifiedPreviousIndex: {pair.MutationModified?.ModifiedPreviousIndex}, ModifiedNextIndex: {pair.MutationModified?.ModifiedNextIndex}");
-        // });
-        // Console.WriteLine();
-        // tracker.PairFrequencies.ToList().ForEach(pair => Console.WriteLine($"Key: {pair.Key}, Value: {pair.Value}"));
-        // Console.WriteLine();
+        Console.WriteLine($"Merges: {merges.Count}");
     }
 }
