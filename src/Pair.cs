@@ -5,8 +5,4 @@ public class Pair()
     public required int Index { get; set; }
     public int? PreviousIndex { get; set; }
     public int? NextIndex { get; set; }
-    public int? LeapIndex { get; set; }
-
-    public required State State { get; set; }
-    public MutationModified? MutationModified { get; set; }
 }
