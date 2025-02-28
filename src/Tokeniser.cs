@@ -5,7 +5,7 @@ public static class Tokeniser
     {
         var pairs = new List<Pair>();
         var merges = new Dictionary<int, Tuple<int, int>>();
-        var tracker = new Tracker();
+        var context = new TokeniserContext();
         var benchmark = new Benchmark();
 
         benchmark.Measure("Prepare", () =>
@@ -27,7 +27,7 @@ public static class Tokeniser
                 };
 
                 pairs.Add(pair);
-                tracker.AddPair(value, valueNext, i);
+                context.AddPair(value, valueNext, i);
             }
         });
 
@@ -43,14 +43,14 @@ public static class Tokeniser
         //       });
         // #endregion
 
-        benchmark.Measure("Commit", tracker.Commit);
+        benchmark.Measure("Commit", context.Commit);
         var shouldRun = true;
 
         while (merges.Count < vocabSize && shouldRun)
         {
             benchmark.Measure("Merge", () =>
             {
-                var mostFrequentPair = tracker.GetMostFrequentPair();
+                var mostFrequentPair = context.GetMostFrequentPair();
 
                 if (mostFrequentPair == null)
                 {
@@ -62,7 +62,7 @@ public static class Tokeniser
                 {
                     var isMostFrequentPairMerged = mostFrequentPair.Item1 >= 256 || mostFrequentPair.Item2 >= 256;
                     var mergeValue = merges.Count + 256;
-                    var mostFrequentPairIndexes = tracker.GetPairIndexes(mostFrequentPair);
+                    var mostFrequentPairIndexes = context.GetPairIndexes(mostFrequentPair);
 
                     merges[mergeValue] = mostFrequentPair;
 
@@ -95,8 +95,8 @@ public static class Tokeniser
                                 // Console.Write("\n");
                                 // #endregion
 
-                                tracker.RemovePair(nextPair.Value, nextPair.ValueNext);
-                                tracker.AddPair(mergeValue, nextPair.ValueNext, nextPair.Index);
+                                context.RemovePair(nextPair.Value, nextPair.ValueNext);
+                                context.AddPair(mergeValue, nextPair.ValueNext, nextPair.Index);
 
                                 // Update the next pair.
                                 pairs[nextPair.Index].Value = mergeValue;
@@ -113,8 +113,8 @@ public static class Tokeniser
                                     // Console.Write("\n");
                                     // #endregion
 
-                                    tracker.RemovePair(previousPair.Value, previousPair.ValueNext);
-                                    tracker.AddPair(previousPair.Value, nextPair.Value, previousPair.Index);
+                                    context.RemovePair(previousPair.Value, previousPair.ValueNext);
+                                    context.AddPair(previousPair.Value, nextPair.Value, previousPair.Index);
 
                                     pairs[previousPair.Index].ValueNext = nextPair.Value;
                                     pairs[previousPair.Index].NextIndex = currentPair.NextIndex;
@@ -124,7 +124,7 @@ public static class Tokeniser
                                 // Console.WriteLine($"Deleted mutation: Index: {currentPair.Index}");
                                 // #endregion
 
-                                tracker.RemovePair(currentPair.Value, currentPair.ValueNext);
+                                context.RemovePair(currentPair.Value, currentPair.ValueNext);
 
                                 // Point the next pair to the current pair's previous pair.
                                 pairs[nextPair.Index].PreviousIndex = currentPair.PreviousIndex;
@@ -138,7 +138,7 @@ public static class Tokeniser
                 }
 
 
-                benchmark.Measure("Commit", tracker.Commit);
+                benchmark.Measure("Commit", context.Commit);
 
                 // Console.WriteLine();
                 // pairs.ForEach(pair =>

@@ -1,4 +1,4 @@
-public class Tracker
+public class TokeniserContext
 {
     private OrderedDictionary<Tuple<int, int>, int> PairFrequencies { get; set; } = [];
     private Dictionary<Tuple<int, int>, List<int>> PairIndexes { get; set; } = [];

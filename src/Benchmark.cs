@@ -33,9 +33,9 @@ public class Benchmark
 
         foreach (var (task, time) in Results)
         {
-            Console.WriteLine("|{0,10}|{1,10}|{2,10}|", task, string.Format($"{time:#.##}"), string.Format($"{time / totalTime * 100:#.##}%"));
+            Console.WriteLine("|{0,10}|{1,10}|{2,10}|", task, string.Format($"{time:#.###}"), string.Format($"{time / totalTime * 100:#.###}%"));
         }
 
-         Console.WriteLine("|{0,10}|{1,10}|{2,10}|", "Total", string.Format($"{totalTime:#.##}"), string.Empty);
+         Console.WriteLine("|{0,10}|{1,10}|{2,10}|", "Total", string.Format($"{totalTime:#.###}"), string.Empty);
     }
 }
