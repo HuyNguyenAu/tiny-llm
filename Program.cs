@@ -4,7 +4,7 @@ using var reader = new StreamReader("/Users/huy/Development/tiny-llm/data/taylor
 var text = reader.ReadToEnd();
 var token = Encoding.UTF8.GetBytes(text).Select(Convert.ToInt32).ToArray();
 
-TokeniserLeap.Train(token, 10000);
+Tokeniser.Train(token, 10000);
 
 // foreach (var step in trainingSteps)
 // {
