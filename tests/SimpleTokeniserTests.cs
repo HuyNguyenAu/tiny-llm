@@ -1,7 +1,7 @@
 using System.Text;
 using Xunit;
 
-public class BPETokeniserTests()
+public class SimpleTokeniserTests()
 {
     [Fact]
     public void GetPairFrequencies_ReturnsOrderedDescendingPairFrequencies()
@@ -19,7 +19,7 @@ public class BPETokeniserTests()
         };
 
         // Act
-        var result = BPETokeniser.GetPairFrequencies(tokens);
+        var result = SimpleTokeniser.GetPairFrequencies(tokens);
 
         // Assert
         Assert.Equal(expected, result);
@@ -63,9 +63,9 @@ public class BPETokeniserTests()
         var mintedTokenStep2 = 88;
 
         // Act.
-        var resultStep0 = BPETokeniser.Merge(tokens, pairFrequenciesStep0[0].Key, mintedTokenStep0);
-        var resultStep1 = BPETokeniser.Merge(resultStep0, pairFrequenciesStep1[1].Key, mintedTokenStep1);
-        var resultStep2 = BPETokeniser.Merge(resultStep1, pairFrequenciesStep2[0].Key, mintedTokenStep2);
+        var resultStep0 = SimpleTokeniser.Merge(tokens, pairFrequenciesStep0[0].Key, mintedTokenStep0);
+        var resultStep1 = SimpleTokeniser.Merge(resultStep0, pairFrequenciesStep1[1].Key, mintedTokenStep1);
+        var resultStep2 = SimpleTokeniser.Merge(resultStep1, pairFrequenciesStep2[0].Key, mintedTokenStep2);
 
         // Assert.
         Assert.Equal(Encoding.UTF8.GetBytes("ZabdZabac").Select(c => (int)c).ToArray(), resultStep0);
@@ -118,7 +118,7 @@ public class BPETokeniserTests()
         };
 
         // Act.
-        var trainingSteps = BPETokeniser.Train(tokens, 5).ToArray();
+        var trainingSteps = SimpleTokeniser.Train(tokens, 5).ToArray();
 
         // Assert.
         Assert.Equal(3, trainingSteps.Length);
