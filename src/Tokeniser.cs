@@ -1,7 +1,7 @@
 
-public class Tokeniser(bool debug = false)
+public class Tokeniser(bool debug = false, bool showBenchmark = false)
 {
-    private Dictionary<int, Tuple<int, int>> Merges = [];
+    private OrderedDictionary<int, Tuple<int, int>> Merges = [];
 
     private void PrintPairs(List<Pair> pairs)
     {
@@ -185,14 +185,34 @@ public class Tokeniser(bool debug = false)
         }
 
         #region Debug
-        if (debug)
+        if (debug || showBenchmark)
         {
             Console.Write("Merges Count");
             Console.WriteLine(" ----------------------------------------------------------------\n");
             Console.WriteLine(Merges.Count);
             Console.WriteLine();
+        }
+
+        if (showBenchmark)
+        {
             benchmark.PrintResults();
         }
         #endregion
+    }
+
+    public void Decode(int[] tokens)
+    {
+        foreach (var token in tokens)
+        {
+            if (Merges.ContainsKey(token))
+            {
+                var merge = Merges[token];
+                Console.Write($"{merge.Item1} {merge.Item2} ");
+            }
+            else
+            {
+                Console.Write($"{token} ");
+            }
+        }
     }
 }
