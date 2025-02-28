@@ -1,31 +1,41 @@
 public class Tracker
 {
-    public OrderedDictionary<Tuple<int, int>, int> PairFrequencies { get; private set; } = [];
-    public Dictionary<Tuple<int, int>, List<int>> PairIndexes { get; private set; } = [];
+    private OrderedDictionary<Tuple<int, int>, int> PairFrequencies { get; set; } = [];
+    private Dictionary<Tuple<int, int>, List<int>> PairIndexes { get; set; } = [];
+    private Tuple<int, int>? MostFrequentPair { get; set; }
 
     public void Commit()
     {
-        var sortedPairFrequencies = PairFrequencies
-            .Where(pair => pair.Value > 1)
-            .OrderByDescending(pair => pair.Value);
-        PairFrequencies = new OrderedDictionary<Tuple<int, int>, int>(sortedPairFrequencies);
-    }
-
-    public Tuple<int, int>? MostFrequentPair()
-    {
         if (PairFrequencies.Count == 0)
         {
-            return null;
+            MostFrequentPair = null;
         }
 
-        var mostFrequentPair = PairFrequencies.First();
+        var mostFrequentPairFrequencies = PairFrequencies.MaxBy(pair => pair.Value);
 
-        if (mostFrequentPair.Value == 1)
+        if (mostFrequentPairFrequencies.Value == 1)
         {
-            return null;
+            MostFrequentPair = null;
+        }
+        else
+        {
+            MostFrequentPair = mostFrequentPairFrequencies.Key;
+        }
+    }
+
+    public Tuple<int, int>? GetMostFrequentPair()
+    {
+        return MostFrequentPair;
+    }
+
+    public List<int> GetPairIndexes(Tuple<int, int> pair)
+    {
+        if (PairIndexes.TryGetValue(pair, out var _))
+        {
+            return PairIndexes[pair];
         }
 
-        return mostFrequentPair.Key;
+        return [];
     }
 
     public void AddPair(int pairValue, int pairValueNext, int pairIndex)

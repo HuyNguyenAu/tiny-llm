@@ -50,7 +50,7 @@ public static class Tokeniser
         {
             benchmark.Measure("Merge", () =>
             {
-                var mostFrequentPair = tracker.MostFrequentPair();
+                var mostFrequentPair = tracker.GetMostFrequentPair();
 
                 if (mostFrequentPair == null)
                 {
@@ -62,7 +62,7 @@ public static class Tokeniser
                 {
                     var isMostFrequentPairMerged = mostFrequentPair.Item1 >= 256 || mostFrequentPair.Item2 >= 256;
                     var mergeValue = merges.Count + 256;
-                    var mostFrequentPairIndexes = tracker.PairIndexes[mostFrequentPair];
+                    var mostFrequentPairIndexes = tracker.GetPairIndexes(mostFrequentPair);
 
                     merges[mergeValue] = mostFrequentPair;
 
