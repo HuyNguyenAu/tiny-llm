@@ -91,7 +91,7 @@ public static class TokeniserLeap
                             // Console.Write("\n");
                             // #endregion
 
-                            tracker.RemovePair(nextPair.Value, nextPair.ValueNext, nextPair.Index);
+                            tracker.RemovePair(nextPair.Value, nextPair.ValueNext);
                             tracker.AddPair(mergeValue, nextPair.ValueNext, nextPair.Index);
 
                             // Update the next pair.
@@ -109,7 +109,7 @@ public static class TokeniserLeap
                                 // Console.Write("\n");
                                 // #endregion
 
-                                tracker.RemovePair(previousPair.Value, previousPair.ValueNext, previousPair.Index);
+                                tracker.RemovePair(previousPair.Value, previousPair.ValueNext);
                                 tracker.AddPair(previousPair.Value, nextPair.Value, previousPair.Index);
 
                                 pairs[previousPair.Index].ValueNext = nextPair.Value;
@@ -120,7 +120,7 @@ public static class TokeniserLeap
                             // Console.WriteLine($"Deleted mutation: Index: {currentPair.Index}");
                             // #endregion
 
-                            tracker.RemovePair(currentPair.Value, currentPair.ValueNext, currentPair.Index);
+                            tracker.RemovePair(currentPair.Value, currentPair.ValueNext);
 
                             // Point the next pair to the current pair's previous pair.
                             pairs[nextPair.Index].PreviousIndex = currentPair.PreviousIndex;

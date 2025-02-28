@@ -51,7 +51,7 @@ public class Tracker
         }
     }
 
-    public void RemovePair(int pairValue, int pairValueNext, int pairIndex)
+    public void RemovePair(int pairValue, int pairValueNext)
     {
         var pair = new Tuple<int, int>(pairValue, pairValueNext);
 
