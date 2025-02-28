@@ -1,6 +1,8 @@
 
 public class Tokeniser(bool debug = false)
 {
+    private Dictionary<int, Tuple<int, int>> Merges = [];
+
     private void PrintPairs(List<Pair> pairs)
     {
         Console.Write("Pairs");
@@ -25,7 +27,6 @@ public class Tokeniser(bool debug = false)
     public void Train(int[] tokens, int vocabSize)
     {
         var pairs = new List<Pair>();
-        var merges = new Dictionary<int, Tuple<int, int>>();
         var context = new TokeniserContext();
         var benchmark = new Benchmark();
 
@@ -67,7 +68,7 @@ public class Tokeniser(bool debug = false)
 
         var shouldRun = true;
 
-        while (merges.Count < vocabSize && shouldRun)
+        while (Merges.Count < vocabSize && shouldRun)
         {
             benchmark.Measure("Merge", () =>
             {
@@ -82,10 +83,10 @@ public class Tokeniser(bool debug = false)
                 if (mostFrequentPair != null)
                 {
                     var isMostFrequentPairMerged = mostFrequentPair.Item1 >= 256 || mostFrequentPair.Item2 >= 256;
-                    var mergeValue = merges.Count + 256;
+                    var mergeValue = Merges.Count + 256;
                     var mostFrequentPairIndexes = context.GetPairIndexes(mostFrequentPair);
 
-                    merges[mergeValue] = mostFrequentPair;
+                    Merges[mergeValue] = mostFrequentPair;
 
                     #region Debug
                     if (debug)
@@ -186,10 +187,12 @@ public class Tokeniser(bool debug = false)
         #region Debug
         if (debug)
         {
+            Console.Write("Merges Count");
+            Console.WriteLine(" ----------------------------------------------------------------\n");
+            Console.WriteLine(Merges.Count);
+            Console.WriteLine();
             benchmark.PrintResults();
         }
         #endregion
-
-        Console.WriteLine($"Merges: {merges.Count}");
     }
 }
