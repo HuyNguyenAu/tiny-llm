@@ -92,7 +92,7 @@ public class Tokeniser(bool debug = false)
                     {
                         Console.Write("Merges");
                         Console.WriteLine(" ----------------------------------------------------------------------\n");
-                        Console.WriteLine($"Most frequent pair: {mostFrequentPair.Item1} -> {mostFrequentPair.Item2}");
+                        Console.WriteLine($"Most frequent pair: {mostFrequentPair.Item1} {mostFrequentPair.Item2}");
                         Console.WriteLine($"Most frequent pair indexes: {string.Join(", ", mostFrequentPairIndexes)}");
                         Console.WriteLine();
                     }
