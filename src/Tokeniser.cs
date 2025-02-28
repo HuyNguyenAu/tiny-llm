@@ -1,7 +1,28 @@
 
-public static class Tokeniser
+public class Tokeniser(bool debug = false)
 {
-    public static void Train(int[] tokens, int vocabSize)
+    private void PrintPairs(List<Pair> pairs)
+    {
+        Console.Write("Pairs");
+        Console.WriteLine(" -----------------------------------------------------------------------\n");
+        pairs.ForEach(pair =>
+            Console.WriteLine("Value: {0,3}, Value Next: {1,3}, Index: {2,3}, Previous Index: {2,3}, Next Index: {2,3}", pair.Value, pair.ValueNext, pair.Index, pair.PreviousIndex, pair.NextIndex)
+        );
+    }
+
+    private void PrintValues(List<Pair> pairs)
+    {
+        var values = pairs
+            .Where(pair => pair.PreviousIndex != null || pair.NextIndex != null)
+            .Select(pair => pair.Value);
+
+        Console.Write("Values");
+        Console.WriteLine(" ----------------------------------------------------------------------\n");
+        Console.Write(string.Join(" ", values));
+        Console.WriteLine($" {pairs.Last().ValueNext}");
+    }
+
+    public void Train(int[] tokens, int vocabSize)
     {
         var pairs = new List<Pair>();
         var merges = new Dictionary<int, Tuple<int, int>>();
@@ -31,19 +52,19 @@ public static class Tokeniser
             }
         });
 
-        // #region Debug
-        // Console.Write(string.Join(" ", pairs
-        //        .Select(pair => pair.Value))
-        //    );
-        // Console.WriteLine($" {pairs.Last().ValueNext}");
-
-        // pairs.ForEach(pair =>
-        //       {
-        //           Console.WriteLine($"Value: {pair.Value}, ValueNext: {pair.ValueNext}, Index: {pair.Index}, PreviousIndex: {pair.PreviousIndex}, NextIndex: {pair.NextIndex}");
-        //       });
-        // #endregion
+        #region Debug
+        if (debug)
+        {
+            Console.WriteLine();
+            PrintPairs(pairs);
+            Console.WriteLine();
+            PrintValues(pairs);
+            Console.WriteLine();
+        }
+        #endregion
 
         benchmark.Measure("Commit", context.Commit);
+
         var shouldRun = true;
 
         while (merges.Count < vocabSize && shouldRun)
@@ -66,11 +87,17 @@ public static class Tokeniser
 
                     merges[mergeValue] = mostFrequentPair;
 
-                    // #region Debug
-                    // Console.WriteLine($"{mostFrequentPair} -> {mergeValue}");
-                    // Console.WriteLine($"Most frequent pair indexes: {string.Join(", ", mostFrequentPairIndexes)}");
-                    // Console.WriteLine();
-                    // #endregion  
+                    #region Debug
+                    if (debug)
+                    {
+                        Console.Write("Merges");
+                        Console.WriteLine(" ----------------------------------------------------------------------\n");
+                        Console.WriteLine($"Most frequent pair: {mostFrequentPair.Item1} -> {mostFrequentPair.Item2}");
+                        Console.WriteLine($"Most frequent pair indexes: {string.Join(", ", mostFrequentPairIndexes)}");
+                        Console.WriteLine();
+                    }
+
+                    #endregion
 
                     foreach (var pairIndex in mostFrequentPairIndexes)
                     {
@@ -88,12 +115,12 @@ public static class Tokeniser
 
                             if (currentPair.ValueNext == nextPair.Value && isCurrentPairMerged == isMostFrequentPairMerged)
                             {
-                                // #region Debug
-                                // Console.Write($"Modified mutation next: Index: {currentPair.Index}, Modified Index: {nextPair.Index}, ");
-                                // Console.Write($"Value: {nextPair.Value} -> {mergeValue}, ");
-                                // Console.Write($"Previous Index: {nextPair.PreviousIndex} -> {currentPair.PreviousIndex}, ");
-                                // Console.Write("\n");
-                                // #endregion
+                                #region Debug
+                                if (debug)
+                                {
+                                    Console.WriteLine("[Modified Next] Index: {0,3}, Modified Index: {1,3}, Value: {2,3}, Previous Index: {3,3}", currentPair.Index, nextPair.Index, $"{nextPair.Value} -> {mergeValue}", $"{nextPair.PreviousIndex?.ToString() ?? "null"} -> {currentPair.PreviousIndex?.ToString() ?? "null"}");
+                                }
+                                #endregion
 
                                 context.RemovePair(nextPair.Value, nextPair.ValueNext);
                                 context.AddPair(mergeValue, nextPair.ValueNext, nextPair.Index);
@@ -106,12 +133,12 @@ public static class Tokeniser
                                 {
                                     var previousPair = pairs[currentPair.PreviousIndex.Value];
 
-                                    // #region Debug
-                                    // Console.Write($"Modified mutation prev: Index: {currentPair.Index}, Modified Index: {previousPair.Index}, ");
-                                    // Console.Write($"Value Next: {previousPair.ValueNext} -> {nextPair.Value}, ");
-                                    // Console.Write($"Next Index: {previousPair.NextIndex} -> {currentPair.NextIndex}, ");
-                                    // Console.Write("\n");
-                                    // #endregion
+                                    #region Debug
+                                    if (debug)
+                                    {
+                                        Console.WriteLine("[Modified Prev] Index: {0,3}, Modified Index: {1,3}, Value Next: {2,3}, Next Index: {3,3}", currentPair.Index, previousPair.Index, $"{previousPair.ValueNext} -> {nextPair.Value}", $"{previousPair.NextIndex?.ToString() ?? "null"} -> {currentPair.NextIndex?.ToString() ?? "null"}");
+                                    }
+                                    #endregion
 
                                     context.RemovePair(previousPair.Value, previousPair.ValueNext);
                                     context.AddPair(previousPair.Value, nextPair.Value, previousPair.Index);
@@ -120,9 +147,12 @@ public static class Tokeniser
                                     pairs[previousPair.Index].NextIndex = currentPair.NextIndex;
                                 }
 
-                                // #region Debug
-                                // Console.WriteLine($"Deleted mutation: Index: {currentPair.Index}");
-                                // #endregion
+                                #region Debug
+                                if (debug)
+                                {
+                                    Console.WriteLine("[Deleted Next]  Index: {0,3}", currentPair.Index);
+                                }
+                                #endregion
 
                                 context.RemovePair(currentPair.Value, currentPair.ValueNext);
 
@@ -140,21 +170,25 @@ public static class Tokeniser
 
                 benchmark.Measure("Commit", context.Commit);
 
-                // Console.WriteLine();
-                // pairs.ForEach(pair =>
-                //    {
-                //        Console.WriteLine($"Value: {pair.Value}, ValueNext: {pair.ValueNext}, Index: {pair.Index}, PreviousIndex: {pair.PreviousIndex}, NextIndex: {pair.NextIndex}");
-                //    });
-                // Console.Write(string.Join(" ", pairs
-                //     .Where(pair => pair.PreviousIndex != null || pair.NextIndex != null)
-                //     .Select(pair => pair.Value))
-                // );
-                // Console.WriteLine($" {pairs.Last().ValueNext}");
-                // Console.WriteLine();
+                #region Debug
+                if (debug)
+                {
+                    Console.WriteLine();
+                    PrintPairs(pairs);
+                    Console.WriteLine();
+                    PrintValues(pairs);
+                    Console.WriteLine();
+                }
+                #endregion
             });
         }
 
-        benchmark.PrintResults();
+        #region Debug
+        if (debug)
+        {
+            benchmark.PrintResults();
+        }
+        #endregion
 
         Console.WriteLine($"Merges: {merges.Count}");
     }

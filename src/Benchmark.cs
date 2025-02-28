@@ -15,17 +15,18 @@ public class Benchmark
 
         if (Results.ContainsKey(task))
         {
-            Results[task] += stopwatch.ElapsedMilliseconds / 1000d;
+            Results[task] += stopwatch.ElapsedMilliseconds / 1000.0;
         }
         else
         {
-            Results.Add(task, stopwatch.ElapsedMilliseconds / 1000d);
+            Results.Add(task, stopwatch.ElapsedMilliseconds / 1000.0);
         }
     }
 
     public void PrintResults()
     {
-        Console.WriteLine("Benchmark results:");
+        Console.Write("Benchmark results");
+        Console.WriteLine(" ----------------------------------------------------------\n");
         Console.WriteLine("|{0,10}|{1,10}|{2,10}|", "Tasks", "Seconds", "Percentage");
         Console.WriteLine("|{0,10}|{1,10}|{2,10}|", "----------", "----------", "----------");
 
