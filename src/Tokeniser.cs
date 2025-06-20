@@ -23,9 +23,11 @@ namespace tiny_llm.src
         {
             Console.Write("Pairs");
             Console.WriteLine(" -----------------------------------------------------------------------\n");
-            pairs.ForEach(pair =>
-                Console.WriteLine("Value: {0,3}, Value Next: {1,3}, Index: {2,3}, Previous Index: {2,3}, Next Index: {2,3}", pair.Value, pair.ValueNext, pair.Index, pair.PreviousIndex, pair.NextIndex)
-            );
+
+            foreach (var pair in pairs)
+            {
+                Console.WriteLine("Value: {0,3}, Value Next: {1,3}, Index: {2,3}, Previous Index: {2,3}, Next Index: {2,3}", pair.Value, pair.ValueNext, pair.Index, pair.PreviousIndex, pair.NextIndex);
+            }
         }
 
         private static void PrintValues(List<Pair> pairs)
@@ -93,7 +95,6 @@ namespace tiny_llm.src
 
                     if (mostFrequentPair == null)
                     {
-                        shouldRun = false;
                         return;
                     }
 
