@@ -237,19 +237,23 @@ namespace tiny_llm.src
             return trainingSteps;
         }
 
-        public void Decode(int[] tokens)
+        public List<int> Decode(int[] tokens)
         {
+            var decodedTokens = new List<int>();
+
             foreach (var token in tokens)
             {
                 if (Merges.TryGetValue(token, out Tuple<int, int>? merge))
                 {
-                    Console.Write($"{merge.Item1} {merge.Item2} ");
+                    decodedTokens.AddRange([merge.Item1, merge.Item2]);
                 }
                 else
                 {
-                    Console.Write($"{token} ");
+                    decodedTokens.Add(token);
                 }
             }
+
+            return decodedTokens;
         }
     }
 }

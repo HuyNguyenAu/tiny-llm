@@ -6,11 +6,13 @@ namespace tiny_llm.tests
 {
     public class SimpleTokeniserTests()
     {
+        private readonly string ShortText = "aaabdaaabac";
+
         [Fact]
         public void GetPairFrequencies_ReturnsOrderedDescendingPairFrequencies()
         {
             // Arrange.
-            var tokens = Encoding.UTF8.GetBytes("aaabdaaabac").Select(c => (int)c).ToArray();
+            var tokens = Encoding.UTF8.GetBytes(ShortText).Select(c => (int)c).ToArray();
             var expected = new List<KeyValuePair<Tuple<int, int>, int>>
         {
             new(new Tuple<int, int>(97, 97), 4),
@@ -32,7 +34,7 @@ namespace tiny_llm.tests
         public void Merge_ReturnsMergedTokens()
         {
             // Arrange.
-            var tokens = Encoding.UTF8.GetBytes("aaabdaaabac").Select(c => (int)c).ToArray();
+            var tokens = Encoding.UTF8.GetBytes(ShortText).Select(c => (int)c).ToArray();
 
             var pairFrequenciesStep0 = new List<KeyValuePair<Tuple<int, int>, int>>
         {
@@ -80,7 +82,7 @@ namespace tiny_llm.tests
         public void Train_ShortText_ReturnsTrainingSteps()
         {
             // Arrange.
-            var tokens = Encoding.UTF8.GetBytes("aaabdaaabac")
+            var tokens = Encoding.UTF8.GetBytes(ShortText)
                 .Select(Convert.ToInt32)
                 .ToArray();
             var expected = new List<TrainingStep>

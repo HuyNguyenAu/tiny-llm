@@ -6,11 +6,13 @@ namespace tiny_llm.tests
 {
     public class TokeniserTests()
     {
+        private readonly string ShortText = "aaabdaaabac";
+
         [Fact]
         public void Train_ShortText_ReturnsTrainingSteps()
         {
             // Arrange.
-            var tokens = Encoding.UTF8.GetBytes("aaabdaaabac")
+            var tokens = Encoding.UTF8.GetBytes(ShortText)
                 .Select(Convert.ToInt32)
                 .ToArray();
             var expected = new List<TrainingStep>{
@@ -77,6 +79,23 @@ namespace tiny_llm.tests
             Assert.Equal(expected[2].TokensCount, trainingSteps[2].TokensCount);
             Assert.Equal(expected[2].MergeTokensCount, trainingSteps[2].MergeTokensCount);
             Assert.Equal(expected[2].MintedTokensCount, trainingSteps[2].MintedTokensCount);
+        }
+
+        [Fact]
+        public void Decode_ShortText_ReturnsDecodedText()
+        {
+            // Arrange.
+            var tokens = Encoding.UTF8.GetBytes(ShortText)
+                .Select(Convert.ToInt32)
+                .ToArray();
+            var tokeniser = new Tokeniser(new TokeniserOptions());
+
+            // Act.
+            var decodedTokens = tokeniser.Decode(tokens);
+
+            // Assert.
+            var decodedText = string.Join(string.Empty, decodedTokens.Select(t => (char)t));
+            Assert.Equal(ShortText, decodedText);
         }
     }
 }

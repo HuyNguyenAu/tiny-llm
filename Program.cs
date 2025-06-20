@@ -13,4 +13,6 @@ var tokeniserOptions = new TokeniserOptions
 };
 var tokeniser = new Tokeniser(tokeniserOptions);
 var trainingSteps = tokeniser.Train(tokens, 100);
-tokeniser.Decode(tokens);
+var decodedTokens = tokeniser.Decode(tokens);
+
+Console.WriteLine($"Decoded Tokens: {string.Join(" ", decodedTokens)}");
