@@ -1,79 +1,82 @@
-public class TokeniserContext
+namespace tiny_llm.src
 {
-    public OrderedDictionary<int, Tuple<int, int>> Merges { get; private set; } = [];
-    private OrderedDictionary<Tuple<int, int>, int> PairFrequencies { get; set; } = [];
-    private Dictionary<Tuple<int, int>, List<int>> PairIndexes { get; set; } = [];
-    private Tuple<int, int>? MostFrequentPair { get; set; }
-
-    public void Commit()
+    public class TokeniserContext
     {
-        if (PairFrequencies.Count == 0)
+        public OrderedDictionary<int, Tuple<int, int>> Merges { get; private set; } = [];
+        private OrderedDictionary<Tuple<int, int>, int> PairFrequencies { get; set; } = [];
+        private Dictionary<Tuple<int, int>, List<int>> PairIndexes { get; set; } = [];
+        private Tuple<int, int>? MostFrequentPair { get; set; }
+
+        public void Commit()
         {
-            MostFrequentPair = null;
+            if (PairFrequencies.Count == 0)
+            {
+                MostFrequentPair = null;
+            }
+
+            var mostFrequentPairFrequencies = PairFrequencies.MaxBy(pair => pair.Value);
+
+            if (mostFrequentPairFrequencies.Value == 1)
+            {
+                MostFrequentPair = null;
+            }
+            else
+            {
+                MostFrequentPair = mostFrequentPairFrequencies.Key;
+            }
         }
 
-        var mostFrequentPairFrequencies = PairFrequencies.MaxBy(pair => pair.Value);
-
-        if (mostFrequentPairFrequencies.Value == 1)
+        public Tuple<int, int>? GetMostFrequentPair()
         {
-            MostFrequentPair = null;
-        }
-        else
-        {
-            MostFrequentPair = mostFrequentPairFrequencies.Key;
-        }
-    }
-
-    public Tuple<int, int>? GetMostFrequentPair()
-    {
-        return MostFrequentPair;
-    }
-
-    public IList<int> GetPairIndexes(Tuple<int, int> pair)
-    {
-        if (PairIndexes.TryGetValue(pair, out var _))
-        {
-            return PairIndexes[pair];
+            return MostFrequentPair;
         }
 
-        return [];
-    }
-
-    public void AddPair(int pairValue, int pairValueNext, int pairIndex)
-    {
-        var pair = new Tuple<int, int>(pairValue, pairValueNext);
-
-        if (PairFrequencies.TryGetValue(pair, out _))
+        public IList<int> GetPairIndexes(Tuple<int, int> pair)
         {
-            PairFrequencies[pair]++;
-        }
-        else
-        {
-            PairFrequencies[pair] = 1;
+            if (PairIndexes.TryGetValue(pair, out var _))
+            {
+                return PairIndexes[pair];
+            }
+
+            return [];
         }
 
-        if (PairIndexes.TryGetValue(pair, out var _))
+        public void AddPair(int pairValue, int pairValueNext, int pairIndex)
         {
-            PairIndexes[pair].Add(pairIndex);
+            var pair = new Tuple<int, int>(pairValue, pairValueNext);
+
+            if (PairFrequencies.TryGetValue(pair, out _))
+            {
+                PairFrequencies[pair]++;
+            }
+            else
+            {
+                PairFrequencies[pair] = 1;
+            }
+
+            if (PairIndexes.TryGetValue(pair, out var _))
+            {
+                PairIndexes[pair].Add(pairIndex);
+            }
+            else
+            {
+                PairIndexes[pair] = [pairIndex];
+            }
         }
-        else
+
+        public void RemovePair(int pairValue, int pairValueNext)
         {
-            PairIndexes[pair] = [pairIndex];
+            var pair = new Tuple<int, int>(pairValue, pairValueNext);
+
+            if (PairFrequencies.TryGetValue(pair, out _))
+            {
+                PairFrequencies[pair]--;
+            }
         }
-    }
 
-    public void RemovePair(int pairValue, int pairValueNext)
-    {
-        var pair = new Tuple<int, int>(pairValue, pairValueNext);
-
-        if (PairFrequencies.TryGetValue(pair, out _))
+        public void AddMerge(int pairValue, int pairValueNext, int mergeValue)
         {
-            PairFrequencies[pair]--;
+            Merges[mergeValue] = new Tuple<int, int>(pairValue, pairValueNext);
         }
-    }
-
-    public void AddMerge(int pairValue, int pairValueNext, int mergeValue)
-    {
-        Merges[mergeValue] = new Tuple<int, int>(pairValue, pairValueNext);
     }
 }
