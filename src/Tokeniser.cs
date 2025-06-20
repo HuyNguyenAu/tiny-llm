@@ -40,9 +40,9 @@ namespace tiny_llm.src
             Console.WriteLine($" {pairs.Last().ValueNext}");
         }
 
-        public IEnumerable<TrainingStep> Train(int[] tokens, int vocabSize)
+        public List<TrainingStep> Train(int[] tokens, int vocabSize)
         {
-            var pairs = new List<Pair>();
+            var pairs = new Pair[tokens.Length];
             var context = new TokeniserContext();
             var benchmark = new Benchmark();
             var trainingSteps = new List<TrainingStep>();
@@ -65,7 +65,7 @@ namespace tiny_llm.src
                         NextIndex = nextPairIndex > tokens.Length - 2 ? null : nextPairIndex,
                     };
 
-                    pairs.Add(pair);
+                    pairs[i] = pair;
                     context.AddPair(value, valueNext, i);
                 }
             });
@@ -74,9 +74,9 @@ namespace tiny_llm.src
             if (options.ShowDebug)
             {
                 Console.WriteLine();
-                PrintPairs(pairs);
+                PrintPairs([.. pairs]);
                 Console.WriteLine();
-                PrintValues(pairs);
+                PrintValues([.. pairs]);
                 Console.WriteLine();
             }
             #endregion
@@ -117,9 +117,9 @@ namespace tiny_llm.src
 
                         #endregion
 
-                        foreach (var pairIndex in mostFrequentPairIndexes)
+                        for (int i = 0; i < mostFrequentPairIndexes.Count; i++)
                         {
-                            var currentPair = pairs[pairIndex];
+                            var currentPair = pairs[mostFrequentPairIndexes[i]];
                             var isCurrentPairMerged = currentPair.Value >= 256 || currentPair.ValueNext >= 256;
 
                             if (currentPair.PreviousIndex == null && currentPair.NextIndex == null)
@@ -206,9 +206,9 @@ namespace tiny_llm.src
                     if (options.ShowDebug)
                     {
                         Console.WriteLine();
-                        PrintPairs(pairs);
+                        PrintPairs([.. pairs]);
                         Console.WriteLine();
-                        PrintValues(pairs);
+                        PrintValues([.. pairs]);
                         Console.WriteLine();
                     }
                     #endregion

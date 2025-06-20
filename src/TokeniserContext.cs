@@ -31,7 +31,7 @@ namespace tiny_llm.src
             return MostFrequentPair;
         }
 
-        public IList<int> GetPairIndexes(Tuple<int, int> pair)
+        public List<int> GetPairIndexes(Tuple<int, int> pair)
         {
             if (PairIndexes.TryGetValue(pair, out var _))
             {
