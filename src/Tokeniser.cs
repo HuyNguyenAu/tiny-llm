@@ -40,7 +40,7 @@ namespace tiny_llm.src
             Console.WriteLine($" {pairs.Last().ValueNext}");
         }
 
-        public List<TrainingStep> Train(int[] tokens, int vocabSize)
+        public IEnumerable<TrainingStep> Train(int[] tokens, int vocabSize)
         {
             var pairs = new List<Pair>();
             var context = new TokeniserContext();
@@ -134,7 +134,7 @@ namespace tiny_llm.src
                                 if (currentPair.ValueNext == nextPair.Value && isCurrentPairMerged == isMostFrequentPairMerged)
                                 {
                                     #region Debug
-                                    if (debug)
+                                    if (options.ShowDebug)
                                     {
                                         Console.WriteLine("[Modified Next] Index: {0,3}, Modified Index: {1,3}, Value: {2,3}, Previous Index: {3,3}", currentPair.Index, nextPair.Index, $"{nextPair.Value} -> {mergeValue}", $"{nextPair.PreviousIndex?.ToString() ?? "null"} -> {currentPair.PreviousIndex?.ToString() ?? "null"}");
                                     }
