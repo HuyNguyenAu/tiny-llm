@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Newtonsoft.Json;
 using tiny_llm.src;
 
 
@@ -10,8 +9,8 @@ var tokens = Encoding.UTF8.GetBytes(text).Select(Convert.ToInt32).ToArray();
 var tokeniserOptions = new TokeniserOptions
 {
     ShowBenchmark = true,
+    ShowDebug = true,
 };
 var tokeniser = new Tokeniser(tokeniserOptions);
 var trainingSteps = tokeniser.Train(tokens, 100);
-
-//Console.WriteLine(JsonConvert.SerializeObject(trainingSteps, Formatting.Indented));
+tokeniser.Decode(tokens);
