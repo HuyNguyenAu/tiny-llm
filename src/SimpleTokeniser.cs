@@ -1,6 +1,6 @@
 namespace tiny_llm.src
 {
-    public static class SimpleTokeniser
+    internal static class SimpleTokeniser
     {
         public static List<KeyValuePair<Tuple<int, int>, int>> GetPairFrequencies(int[] tokens)
         {

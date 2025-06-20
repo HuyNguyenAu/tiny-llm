@@ -1,6 +1,6 @@
 namespace tiny_llm.src
 {
-    public record TrainingStep
+    internal record TrainingStep
     {
         public required int Iterations { get; init; }
         public required int MintedToken { get; init; }

@@ -1,6 +1,6 @@
 namespace tiny_llm.src
 {
-    public class TokeniserContext
+    internal class TokeniserContext
     {
         public OrderedDictionary<int, Tuple<int, int>> Merges { get; private set; } = [];
         private OrderedDictionary<Tuple<int, int>, int> PairFrequencies { get; set; } = [];

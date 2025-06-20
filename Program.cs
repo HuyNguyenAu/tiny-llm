@@ -3,11 +3,15 @@ using Newtonsoft.Json;
 using tiny_llm.src;
 
 
-using var reader = new StreamReader("C:\\Users\\Kaze\\source\\repos\\tiny-llm\\data\\test_data_large.txt");
+using var reader = new StreamReader("C:\\Users\\Kaze\\source\\repos\\tiny-llm\\data\\test_data_small.txt");
 var text = reader.ReadToEnd();
 var tokens = Encoding.UTF8.GetBytes(text).Select(Convert.ToInt32).ToArray();
 
-var tokeniser = new Tokeniser(false, true);
+var tokeniserOptions = new TokeniserOptions
+{
+    ShowBenchmark = true,
+};
+var tokeniser = new Tokeniser(tokeniserOptions);
 var trainingSteps = tokeniser.Train(tokens, 100);
 
-Console.WriteLine(JsonConvert.SerializeObject(trainingSteps, Formatting.Indented));
+//Console.WriteLine(JsonConvert.SerializeObject(trainingSteps, Formatting.Indented));

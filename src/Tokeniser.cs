@@ -1,8 +1,23 @@
 namespace tiny_llm.src
 {
-    public class Tokeniser(bool debug = false, bool showBenchmark = false)
+    internal record TokeniserOptions
     {
-        private OrderedDictionary<int, Tuple<int, int>> Merges = [];
+        public bool ShowDebug { get; init; } = false;
+        public bool ShowBenchmark { get; init; } = false;
+    }
+
+    internal record Pair
+    {
+        public required int Value { get; set; }
+        public required int ValueNext { get; set; }
+        public required int Index { get; set; }
+        public int? PreviousIndex { get; set; }
+        public int? NextIndex { get; set; }
+    }
+
+    internal class Tokeniser(TokeniserOptions options)
+    {
+        private readonly OrderedDictionary<int, Tuple<int, int>> Merges = [];
 
         private static void PrintPairs(List<Pair> pairs)
         {
@@ -47,7 +62,7 @@ namespace tiny_llm.src
                         ValueNext = valueNext,
                         Index = i,
                         PreviousIndex = previousPairIndex < 0 ? null : previousPairIndex,
-                        NextIndex = nextPairIndex > tokens.Length - 1 ? null : nextPairIndex,
+                        NextIndex = nextPairIndex > tokens.Length - 2 ? null : nextPairIndex,
                     };
 
                     pairs.Add(pair);
@@ -56,7 +71,7 @@ namespace tiny_llm.src
             });
 
             #region Debug
-            if (debug)
+            if (options.ShowDebug)
             {
                 Console.WriteLine();
                 PrintPairs(pairs);
@@ -91,7 +106,7 @@ namespace tiny_llm.src
                         Merges[mergeValue] = mostFrequentPair;
 
                         #region Debug
-                        if (debug)
+                        if (options.ShowDebug)
                         {
                             Console.Write("Merges");
                             Console.WriteLine(" ----------------------------------------------------------------------\n");
@@ -138,7 +153,7 @@ namespace tiny_llm.src
                                         var previousPair = pairs[currentPair.PreviousIndex.Value];
 
                                         #region Debug
-                                        if (debug)
+                                        if (options.ShowDebug)
                                         {
                                             Console.WriteLine("[Modified Prev] Index: {0,3}, Modified Index: {1,3}, Value Next: {2,3}, Next Index: {3,3}", currentPair.Index, previousPair.Index, $"{previousPair.ValueNext} -> {nextPair.Value}", $"{previousPair.NextIndex?.ToString() ?? "null"} -> {currentPair.NextIndex?.ToString() ?? "null"}");
                                         }
@@ -153,7 +168,7 @@ namespace tiny_llm.src
                                     }
 
                                     #region Debug
-                                    if (debug)
+                                    if (options.ShowDebug)
                                     {
                                         Console.WriteLine("[Deleted Next]  Index: {0,3}", currentPair.Index);
                                     }
@@ -188,7 +203,7 @@ namespace tiny_llm.src
                     benchmark.Measure("Commit", context.Commit);
 
                     #region Debug
-                    if (debug)
+                    if (options.ShowDebug)
                     {
                         Console.WriteLine();
                         PrintPairs(pairs);
@@ -201,7 +216,7 @@ namespace tiny_llm.src
             }
 
             #region Debug
-            if (debug || showBenchmark)
+            if (options.ShowDebug || options.ShowBenchmark)
             {
                 Console.Write("Merges Count");
                 Console.WriteLine(" ----------------------------------------------------------------\n");
@@ -209,7 +224,7 @@ namespace tiny_llm.src
                 Console.WriteLine();
             }
 
-            if (showBenchmark)
+            if (options.ShowBenchmark)
             {
                 benchmark.PrintResults();
             }
@@ -222,9 +237,8 @@ namespace tiny_llm.src
         {
             foreach (var token in tokens)
             {
-                if (Merges.ContainsKey(token))
+                if (Merges.TryGetValue(token, out Tuple<int, int>? merge))
                 {
-                    var merge = Merges[token];
                     Console.Write($"{merge.Item1} {merge.Item2} ");
                 }
                 else

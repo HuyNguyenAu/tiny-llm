@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 namespace tiny_llm.src
 {
-    public class Benchmark
+    internal class Benchmark
     {
         public Dictionary<string, double> Results { get; } = [];
         public Stopwatch Stopwatch { get; } = new Stopwatch();
