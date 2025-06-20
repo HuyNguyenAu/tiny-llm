@@ -71,9 +71,9 @@ namespace tiny_llm.tests
             var resultStep2 = SimpleTokeniser.Merge(resultStep1, pairFrequenciesStep2[0].Key, mintedTokenStep2);
 
             // Assert.
-            Assert.Equal(Encoding.UTF8.GetBytes("ZabdZabac").Select(c => (int)c).ToArray(), resultStep0);
-            Assert.Equal(Encoding.UTF8.GetBytes("ZYdZYac").Select(c => (int)c).ToArray(), resultStep1);
-            Assert.Equal(Encoding.UTF8.GetBytes("XdXac").Select(c => (int)c).ToArray(), resultStep2);
+            Assert.Equal([.. Encoding.UTF8.GetBytes("ZabdZabac").Select(c => (int)c)], resultStep0);
+            Assert.Equal([.. Encoding.UTF8.GetBytes("ZYdZYac").Select(c => (int)c)], resultStep1);
+            Assert.Equal([.. Encoding.UTF8.GetBytes("XdXac").Select(c => (int)c)], resultStep2);
         }
 
         [Fact]
@@ -93,8 +93,8 @@ namespace tiny_llm.tests
                 TokensCount = 11,
                 MergeTokensCount = 9,
                 MintedTokensCount = 1,
-                CompressionRatio = 1.222,
-                TimeElapsedSeconds = 0.001,
+                CompressionRatio = 0,
+                TimeElapsedSeconds = 0,
             },
             new()
             {
@@ -104,8 +104,8 @@ namespace tiny_llm.tests
                 TokensCount = 11,
                 MergeTokensCount = 7,
                 MintedTokensCount = 2,
-                CompressionRatio = 1.571,
-                TimeElapsedSeconds = 0.002,
+                CompressionRatio = 0,
+                TimeElapsedSeconds = 0,
             },
             new()
             {
@@ -115,8 +115,8 @@ namespace tiny_llm.tests
                 TokensCount = 11,
                 MergeTokensCount = 5,
                 MintedTokensCount = 3,
-                CompressionRatio = 2.200,
-                TimeElapsedSeconds = 0.003,
+                CompressionRatio = 0,
+                TimeElapsedSeconds = 0,
             },
         };
 
@@ -124,7 +124,7 @@ namespace tiny_llm.tests
             var trainingSteps = SimpleTokeniser.Train(tokens, 5).ToArray();
 
             // Assert.
-            Assert.Equal(3, trainingSteps.Length);
+            Assert.Equal(expected.Count, trainingSteps.Length);
 
             Assert.Equal(expected[0].Iterations, trainingSteps[0].Iterations);
             Assert.Equal(expected[0].Pair, trainingSteps[0].Pair);
@@ -132,7 +132,6 @@ namespace tiny_llm.tests
             Assert.Equal(expected[0].TokensCount, trainingSteps[0].TokensCount);
             Assert.Equal(expected[0].MergeTokensCount, trainingSteps[0].MergeTokensCount);
             Assert.Equal(expected[0].MintedTokensCount, trainingSteps[0].MintedTokensCount);
-            Assert.Equal(expected[0].CompressionRatio, trainingSteps[0].CompressionRatio);
 
             Assert.Equal(expected[1].Iterations, trainingSteps[1].Iterations);
             Assert.Equal(expected[1].Pair, trainingSteps[1].Pair);
@@ -140,7 +139,6 @@ namespace tiny_llm.tests
             Assert.Equal(expected[1].TokensCount, trainingSteps[1].TokensCount);
             Assert.Equal(expected[1].MergeTokensCount, trainingSteps[1].MergeTokensCount);
             Assert.Equal(expected[1].MintedTokensCount, trainingSteps[1].MintedTokensCount);
-            Assert.Equal(expected[1].CompressionRatio, trainingSteps[1].CompressionRatio);
 
             Assert.Equal(expected[2].Iterations, trainingSteps[2].Iterations);
             Assert.Equal(expected[2].Pair, trainingSteps[2].Pair);

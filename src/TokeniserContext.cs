@@ -7,6 +7,8 @@ namespace tiny_llm.src
         private Dictionary<Tuple<int, int>, List<int>> PairIndexes { get; set; } = [];
         private Tuple<int, int>? MostFrequentPair { get; set; }
 
+        public int MergesCount { get; private set; } = 0;
+
         public void Commit()
         {
             if (PairFrequencies.Count == 0)
@@ -74,9 +76,19 @@ namespace tiny_llm.src
             }
         }
 
-        public void AddMerge(int pairValue, int pairValueNext, int mergeValue)
+        public void AddMerge(int pairValue, int pairValueNext, int mergeValue, bool ignoreMergesCountTracking = false)
         {
             Merges[mergeValue] = new Tuple<int, int>(pairValue, pairValueNext);
+
+            if (!ignoreMergesCountTracking)
+            {
+                MergesCount++;
+            }
+        }
+
+        public void ResetMergeCount()
+        {
+            MergesCount = 0;
         }
     }
 }

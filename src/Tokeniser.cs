@@ -44,7 +44,7 @@ namespace tiny_llm.src
 
         public List<TrainingStep> Train(int[] tokens, int vocabSize)
         {
-            var pairs = new Pair[tokens.Length];
+            var pairs = new Pair[tokens.Length - 1];
             var context = new TokeniserContext();
             var benchmark = new Benchmark();
             var trainingSteps = new List<TrainingStep>();
@@ -95,6 +95,7 @@ namespace tiny_llm.src
 
                     if (mostFrequentPair == null)
                     {
+                        shouldRun = false;
                         return;
                     }
 
@@ -160,7 +161,7 @@ namespace tiny_llm.src
                                         }
                                         #endregion
 
-                                        context.AddMerge(previousPair.Value, nextPair.Value, mergeValue);
+                                        context.AddMerge(previousPair.Value, nextPair.Value, mergeValue, true);
                                         context.RemovePair(previousPair.Value, previousPair.ValueNext);
                                         context.AddPair(previousPair.Value, nextPair.Value, previousPair.Index);
 
@@ -193,11 +194,13 @@ namespace tiny_llm.src
                             MintedToken = mergeValue,
                             Pair = mostFrequentPair,
                             TokensCount = tokens.Length,
-                            MergeTokensCount = mostFrequentPairIndexes.Count,
+                            MergeTokensCount = context.MergesCount,
                             MintedTokensCount = context.Merges.Count,
                             CompressionRatio = (double)tokens.Length / context.Merges.Count,
                             TimeElapsedSeconds = benchmark.Stopwatch.ElapsedMilliseconds / 1000.0,
                         });
+
+                        context.ResetMergeCount();
                     }
 
 
