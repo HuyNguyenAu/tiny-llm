@@ -1,5 +1,6 @@
 public class TokeniserContext
 {
+    public OrderedDictionary<int, Tuple<int, int>> Merges { get; private set; } = [];
     private OrderedDictionary<Tuple<int, int>, int> PairFrequencies { get; set; } = [];
     private Dictionary<Tuple<int, int>, List<int>> PairIndexes { get; set; } = [];
     private Tuple<int, int>? MostFrequentPair { get; set; }
@@ -28,7 +29,7 @@ public class TokeniserContext
         return MostFrequentPair;
     }
 
-    public List<int> GetPairIndexes(Tuple<int, int> pair)
+    public IList<int> GetPairIndexes(Tuple<int, int> pair)
     {
         if (PairIndexes.TryGetValue(pair, out var _))
         {
@@ -69,5 +70,10 @@ public class TokeniserContext
         {
             PairFrequencies[pair]--;
         }
+    }
+
+    public void AddMerge(int pairValue, int pairValueNext, int mergeValue)
+    {
+        Merges[mergeValue] = new Tuple<int, int>(pairValue, pairValueNext);
     }
 }

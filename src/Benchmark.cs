@@ -3,6 +3,12 @@ using System.Diagnostics;
 public class Benchmark
 {
     public Dictionary<string, double> Results { get; } = [];
+    public Stopwatch Stopwatch { get; } = new Stopwatch();
+
+    public Benchmark()
+    {
+        Stopwatch.Start();
+    }
 
     public void Measure(string task, Action action)
     {

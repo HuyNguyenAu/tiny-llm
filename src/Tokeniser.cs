@@ -24,11 +24,12 @@ public class Tokeniser(bool debug = false, bool showBenchmark = false)
         Console.WriteLine($" {pairs.Last().ValueNext}");
     }
 
-    public void Train(int[] tokens, int vocabSize)
+    public IList<TrainingStep> Train(int[] tokens, int vocabSize)
     {
         var pairs = new List<Pair>();
         var context = new TokeniserContext();
         var benchmark = new Benchmark();
+        var trainingSteps = new List<TrainingStep>();
 
         benchmark.Measure("Prepare", () =>
         {
@@ -123,6 +124,7 @@ public class Tokeniser(bool debug = false, bool showBenchmark = false)
                                 }
                                 #endregion
 
+                                context.AddMerge(nextPair.Value, currentPair.Value, mergeValue);
                                 context.RemovePair(nextPair.Value, nextPair.ValueNext);
                                 context.AddPair(mergeValue, nextPair.ValueNext, nextPair.Index);
 
@@ -141,6 +143,7 @@ public class Tokeniser(bool debug = false, bool showBenchmark = false)
                                     }
                                     #endregion
 
+                                    context.AddMerge(previousPair.Value, nextPair.Value, mergeValue);
                                     context.RemovePair(previousPair.Value, previousPair.ValueNext);
                                     context.AddPair(previousPair.Value, nextPair.Value, previousPair.Index);
 
@@ -166,6 +169,18 @@ public class Tokeniser(bool debug = false, bool showBenchmark = false)
                             }
                         }
                     }
+
+                     trainingSteps.Add(new TrainingStep
+                        {
+                            Iterations = trainingSteps.Count,
+                            MintedToken = mergeValue,
+                            Pair = mostFrequentPair,
+                            TokensCount = tokens.Length,
+                            MergeTokensCount = mostFrequentPairIndexes.Count,
+                            MintedTokensCount = context.Merges.Count,
+                            CompressionRatio = (double)tokens.Length / context.Merges.Count,
+                            TimeElapsedSeconds = benchmark.Stopwatch.ElapsedMilliseconds / 1000.0,
+                        });
                 }
 
 
@@ -198,6 +213,8 @@ public class Tokeniser(bool debug = false, bool showBenchmark = false)
             benchmark.PrintResults();
         }
         #endregion
+
+        return trainingSteps;
     }
 
     public void Decode(int[] tokens)
