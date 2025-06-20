@@ -39,13 +39,17 @@ namespace tiny_llm.src
             Console.WriteLine("|{0,10}|{1,10}|{2,10}|", "----------", "----------", "----------");
 
             var totalTime = Results.Values.Sum();
+            var totalPercentage = 0.0;
 
             foreach (var (task, time) in Results)
             {
-                Console.WriteLine("|{0,10}|{1,10}|{2,10}|", task, string.Format($"{time:#.###}"), string.Format($"{time / totalTime * 100:#.###}%"));
+                var percentage = time / totalTime * 100;
+                totalPercentage += percentage;
+
+                Console.WriteLine("|{0,10}|{1,10}|{2,10}|", task, string.Format($"{time:#.###}"), string.Format($"{percentage:#.###}%"));
             }
 
-            Console.WriteLine("|{0,10}|{1,10}|{2,10}|", "Total", string.Format($"{totalTime:#.###}"), string.Empty);
+            Console.WriteLine("|{0,10}|{1,10}|{2,10}|", "Total", string.Format($"{totalTime:#.###}"), string.Format($"{totalPercentage:#.###}%"));
         }
     }
 }
