@@ -3,7 +3,7 @@ namespace tiny_llm.src
     internal class TokeniserContext
     {
         public OrderedDictionary<int, Tuple<int, int>> Merges { get; private set; } = [];
-        private OrderedDictionary<Tuple<int, int>, int> PairFrequencies { get; set; } = [];
+        private Dictionary<Tuple<int, int>, int> PairFrequencies { get; set; } = [];
         private Dictionary<Tuple<int, int>, List<int>> PairIndexes { get; set; } = [];
         private Tuple<int, int>? MostFrequentPair { get; set; }
 
@@ -47,33 +47,18 @@ namespace tiny_llm.src
         {
             var pair = new Tuple<int, int>(pairValue, pairValueNext);
 
-            if (PairFrequencies.TryGetValue(pair, out _))
-            {
-                PairFrequencies[pair]++;
-            }
-            else
-            {
-                PairFrequencies[pair] = 1;
-            }
+            PairFrequencies.TryGetValue(pair, out var pairFrequency);
+            PairFrequencies[pair] = pairFrequency + 1;
 
-            if (PairIndexes.TryGetValue(pair, out var _))
-            {
-                PairIndexes[pair].Add(pairIndex);
-            }
-            else
-            {
-                PairIndexes[pair] = [pairIndex];
-            }
+            PairIndexes.TryGetValue(pair, out var pairIndexes);
+            PairIndexes[pair] = [.. pairIndexes ?? [], pairIndex];
         }
 
         public void RemovePair(int pairValue, int pairValueNext)
         {
             var pair = new Tuple<int, int>(pairValue, pairValueNext);
 
-            if (PairFrequencies.TryGetValue(pair, out _))
-            {
-                PairFrequencies[pair]--;
-            }
+            PairFrequencies[pair]--;
         }
 
         public void AddMerge(int pairValue, int pairValueNext, int mergeValue, bool ignoreMergesCountTracking = false)

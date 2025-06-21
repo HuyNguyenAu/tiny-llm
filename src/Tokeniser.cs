@@ -203,7 +203,6 @@ namespace tiny_llm.src
                         context.ResetMergeCount();
                     }
 
-
                     benchmark.Measure("Commit", context.Commit);
 
                     #region Debug

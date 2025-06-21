@@ -21,13 +21,11 @@ namespace tiny_llm.src
 
             stopwatch.Stop();
 
-            if (Results.ContainsKey(task))
+            var elapsedTimeSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
+
+            if (!Results.TryAdd(task, elapsedTimeSeconds))
             {
-                Results[task] += stopwatch.ElapsedMilliseconds / 1000.0;
-            }
-            else
-            {
-                Results.Add(task, stopwatch.ElapsedMilliseconds / 1000.0);
+                Results[task] += elapsedTimeSeconds;
             }
         }
 
